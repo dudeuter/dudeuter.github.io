@@ -13,8 +13,8 @@ let getLeafElements = function(element) {
 }
 
 let getElementArea = function (element) {
-  const { x, y } = element.getBoundingClientRect();
-  return x * y;
+  const { width, height } = element.getBoundingClientRect();
+  return width * height;
 }
 
 let elementAreaPredicate = function (element) {
@@ -26,14 +26,26 @@ let randomElement = function (elems) {
   return elems[rndIdx];
 }
 
-let ghostElement = function(element) {
+let ghostElement = function (element) {
   const parent = element.parentElement;
   
   const clone = element.cloneNode(true);
+  clone.style.position = 'fixed';
+
+  element.style.opacity = 0;
 
   parent.insertBefore(clone, element);
+
+  return clone;
+}
+
+let moveElement = function (element, x, y) {
+  element.style.top = x + 'px';
+  element.style.left = y + 'px';
 }
 
 var elems = getLeafElements().filter(elementAreaPredicate);
 
-console.log('DOMGoose functions:\n\ngetLeafElements\ngetElementArea\nelementAreaPredicate\nElements assigned to elems');
+var a = elems[0];
+
+var b = ghostElement(a);
