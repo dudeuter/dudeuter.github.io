@@ -102,8 +102,17 @@ class Goose {
     this._node = document.createElement('div');
     this._node.id = 'goose';
 
+    // bind methods
+    this.draw = this.draw.bind(this);
+    this.getPosition = this.getPosition.bind(this);
+    this.decideTarget = this.decideTarget.bind(this);
+    // end methods
+
+    this._targets = randomElement(getLeafElements().filter(elementAreaPredicate));
+
     getHtmlElement().appendChild(this._node);
-    this._heartbeat = setInterval(this.draw.bind(this), 40);
+    this._heartbeat = setInterval(this.draw, 40);
+
   }
 
   draw() {
@@ -111,7 +120,14 @@ class Goose {
   }
 
   decideTarget() {
-    console.log(randomElement(getLeafElements().filter(elementAreaPredicate)));
+  }
+
+  getPosition() {
+    
+  }
+
+  getRect() {
+    return this._node.getBoundingClientRect();
   }
 }
 
@@ -124,11 +140,11 @@ class Goose {
  */
 
 
-// var elems = getLeafElements().filter(elementAreaPredicate);
+var elems = getLeafElements().filter(elementAreaPredicate);
 
-// var span = elems[0];
+var span = elems[0];
 
-// var div = elems[1];
+var div = elems[1];
 
 // // var g = ghostElement(span);
 
@@ -143,4 +159,4 @@ class Goose {
 // });
 
 
-new Goose();
+let goose = new Goose();
