@@ -7,3 +7,13 @@
   height: 200px;
   background-color: lightcoral;
 }
+
+#goose {
+  background-color: red;
+  border-radius: 100%;
+  width: 25px;
+  height: 25px;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+}
