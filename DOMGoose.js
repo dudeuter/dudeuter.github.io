@@ -3,7 +3,7 @@
  * @param {HTMLElement} [element=html] DOM Element
  */
 
-let getHtmlElement = function() {
+let getHtmlElement = function () {
   return document.getElementsByTagName('html')[0];
 }
 
@@ -70,11 +70,31 @@ let moveElementRelative = function (element, pushx, pushy) {
   moveElement(element, x + pushx, y + pushy);
 }
 
-let driver = function (element) {
+let driver = function (element, cb = () => { }) {
   let ghost = ghostElement(element);
   setInterval(() => {
     moveElementRelative(ghost, Math.round(Math.random()) ? 1 : -1, Math.round(Math.random()) ? 1 : -1);
+    cb(ghost);
   }, 40);
+  return ghost;
+}
+
+let getMidPoint = function (element) {
+  const { x, y, width, height } = element.getBoundingClientRect();
+  return { x: x + (width / 2), y: y + (height / 2) };
+}
+
+let rectCollisionDetection = function (element1, element2) {
+  const rect1 = element1.getBoundingClientRect();
+  const rect2 = element2.getBoundingClientRect();
+
+  if (rect1.x < rect2.x + rect2.width &&
+    rect1.x + rect1.width > rect2.x &&
+    rect1.y < rect2.y + rect2.height &&
+    rect1.y + rect1.height > rect2.y) {
+    return true;
+  }
+  return false;
 }
 
 class Goose {
@@ -83,21 +103,44 @@ class Goose {
     this._node.id = 'goose';
 
     getHtmlElement().appendChild(this._node);
+    this._heartbeat = setInterval(this.draw.bind(this), 40);
+  }
+
+  draw() {
+    moveElementRelative(this._node, Math.round(Math.random()) ? 1 : -1, Math.round(Math.random()) ? 1 : -1);
+  }
+
+  decideTarget() {
+    console.log(randomElement(getLeafElements().filter(elementAreaPredicate)));
   }
 }
 
+// getLeafElements().filter(elementAreaPredicate).forEach(element => {
+//   driver(element);
+// })
 
 /**
  * test code
  */
 
 
-var elems = getLeafElements().filter(elementAreaPredicate);
+// var elems = getLeafElements().filter(elementAreaPredicate);
 
-var span = elems[0];
+// var span = elems[0];
 
-var div = elems[1];
+// var div = elems[1];
 
-// var g = ghostElement(span);
+// // var g = ghostElement(span);
+
+// let flag = false;
+
+// let driven = driver(span);
+
+// driver(div, (ghost) => {
+//   if (rectCollisionDetection(ghost, span)) {
+//     console.log('collided!');
+//   }
+// });
+
 
 new Goose();
