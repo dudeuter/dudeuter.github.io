@@ -145,18 +145,11 @@ class Goose {
 
     const { x, y } = this.getRect();
 
-    // if ( this._target.x === x && this._target.y) {
-    //   this._target = null;
-    //   return;
-    // }
-
     const vx = mp.x - x;
     const vy = mp.y - y;
 
     const movex = (vx * this._velocity / Math.sqrt(vx**2 + vy**2));
     const movey = (vy * this._velocity / Math.sqrt(vx**2 + vy**2));
-
-    // console.log({x,y, movex,movey});
 
     moveElementRelative(this._node, movex, movey);
   }
