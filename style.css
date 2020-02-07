@@ -5,6 +5,8 @@
 #box {
   width: 400px;
   height: 200px;
+  left: 100px;
+  position: fixed;
   background-color: lightcoral;
 }
 
