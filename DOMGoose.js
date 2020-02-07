@@ -79,6 +79,15 @@ let driver = function (element, cb = () => { }) {
   return ghost;
 }
 
+let driveAway = function (element, cb = () => { }) {
+  let ghost = ghostElement(element);
+  setInterval(() => {
+    moveElementRelative(ghost, 4, 4);
+    cb(ghost);
+  }, 40);
+  return ghost;
+}
+
 let getMidPoint = function (element) {
   const { x, y, width, height } = element.getBoundingClientRect();
   return { x: x + (width / 2), y: y + (height / 2) };
@@ -100,7 +109,14 @@ let rectCollisionDetection = function (element1, element2) {
 class Goose {
   constructor() {
     this._node = document.createElement('div');
-    this._node.id = 'goose';
+    // this._node.id = 'goose';
+
+    this._node.style.backgroundColor = 'red';
+    this._node.style.width = '25px';
+    this._node.style.height = '25px';
+    this._node.style.position = 'fixed';
+
+    this._velocity = 2;
 
     // bind methods
     this.draw = this.draw.bind(this);
@@ -108,7 +124,8 @@ class Goose {
     this.decideTarget = this.decideTarget.bind(this);
     // end methods
 
-    this._targets = randomElement(getLeafElements().filter(elementAreaPredicate));
+    this._targets = getLeafElements().filter(elementAreaPredicate);
+    this._target = null;
 
     getHtmlElement().appendChild(this._node);
     this._heartbeat = setInterval(this.draw, 40);
@@ -116,10 +133,36 @@ class Goose {
   }
 
   draw() {
-    moveElementRelative(this._node, Math.round(Math.random()) ? 1 : -1, Math.round(Math.random()) ? 1 : -1);
+    if (!this._target) {
+      this.decideTarget();
+    }
+
+    if (rectCollisionDetection(this._target, this._node)) {
+      this.decideTarget();
+    }
+
+    const mp = getMidPoint(this._target);
+
+    const { x, y } = this.getRect();
+
+    // if ( this._target.x === x && this._target.y) {
+    //   this._target = null;
+    //   return;
+    // }
+
+    const vx = mp.x - x;
+    const vy = mp.y - y;
+
+    const movex = (vx * this._velocity / Math.sqrt(vx**2 + vy**2));
+    const movey = (vy * this._velocity / Math.sqrt(vx**2 + vy**2));
+
+    // console.log({x,y, movex,movey});
+
+    moveElementRelative(this._node, movex, movey);
   }
 
   decideTarget() {
+    this._target = randomElement(this._targets);
   }
 
   getPosition() {
@@ -160,3 +203,5 @@ var div = elems[1];
 
 
 let goose = new Goose();
+
+// elems.forEach(e => driveAway(e));
