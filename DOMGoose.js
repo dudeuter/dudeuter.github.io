@@ -1,12 +1,30 @@
-/**
- * getLeafElements gets all leaf elements of the selected element, it selects the first html element in the document as it's default parameter
- * @param {HTMLElement} [element=html] DOM Element
- */
+let swap = function(a, p1, p2) {
+  [a[p1], a[p2]] = [a[p2], a[p1]];
+}
+
+let shuffle = function(array) {
+  const newArr = [...array];
+  for (let i = 0; i < newArr.length; i++) {
+    swap(newArr, i, Math.floor(Math.random() * (newArr.length - i)) + i);
+  }
+  return newArr;
+}
+
+let randomGenerator = function* (array) {
+  const vals = shuffle(array);
+  for (let i = 0; i < vals.length; i++) {
+    yield vals[i];
+  }
+}
 
 let getHtmlElement = function () {
   return document.getElementsByTagName('html')[0];
 }
 
+/**
+ * getLeafElements gets all leaf elements of the selected element, it selects the first html element in the document as it's default parameter
+ * @param {HTMLElement} [element=html] DOM Element
+ */
 let getLeafElements = function (element) {
   element = element || getHtmlElement();
 
@@ -108,13 +126,14 @@ let rectCollisionDetection = function (element1, element2) {
 
 class Goose {
   constructor() {
-    this._node = document.createElement('div');
+    this._node = document.createElement('img');
     // this._node.id = 'goose';
 
-    this._node.style.backgroundColor = 'red';
-    this._node.style.width = '25px';
-    this._node.style.height = '25px';
+    this._node.src = 'https://i.ya-webdesign.com/images/goose-clipart-7.png';
+    this._node.style.width = '50px';
+    this._node.style.height = '50px';
     this._node.style.position = 'fixed';
+    this._node.style.zIndex = '100';
 
     this._velocity = 2;
 
@@ -125,7 +144,9 @@ class Goose {
     // end methods
 
     this._targets = getLeafElements().filter(elementAreaPredicate);
+    this._gen = randomGenerator(this._targets);
     this._target = null;
+    this._children = [];
 
     getHtmlElement().appendChild(this._node);
     this._heartbeat = setInterval(this.draw, 40);
@@ -134,11 +155,12 @@ class Goose {
 
   draw() {
     if (!this._target) {
-      this.decideTarget();
+      this._target = this._gen.next().value;
     }
 
     if (rectCollisionDetection(this._target, this._node)) {
-      this.decideTarget();
+      this._children.push(ghostElement(this._target));
+      this._target = this._gen.next().value;
     }
 
     const mp = getMidPoint(this._target);
@@ -152,6 +174,9 @@ class Goose {
     const movey = (vy * this._velocity / Math.sqrt(vx**2 + vy**2));
 
     moveElementRelative(this._node, movex, movey);
+    this._children.forEach(child => {
+      moveElementRelative(child, movex, movey);
+    });
   }
 
   decideTarget() {
