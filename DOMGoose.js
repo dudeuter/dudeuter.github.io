@@ -65,7 +65,7 @@ let ghostElement = function (element) {
   const { width, height } = getRect(element);
 
   const ghost = element.cloneNode(true);
-  ghost.style.position = 'fixed';
+  ghost.style.position = 'absolute';
   ghost.style.width = `${width}px`;
   ghost.style.height = `${height}px`;
 
@@ -142,7 +142,7 @@ class Goose {
     // styling
     this._node.style.width = '100px';
     this._node.style.height = '100px';
-    this._node.style.position = 'fixed';
+    this._node.style.position = 'absolute';
     this._node.style.top = '0';
     this._node.style.left = '0';
     this._node.style.zIndex = '1';
@@ -153,7 +153,7 @@ class Goose {
     this.decideTarget = this.decideTarget.bind(this);
     // end methods
 
-    this._velocity = velocity || 2;
+    this._velocity = velocity || 6;
     this._targets = targets || getLeafElements().filter(elementAreaPredicate);
     this._order = randomGenerator(this._targets);
     this._target = null;
