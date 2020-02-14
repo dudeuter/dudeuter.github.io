@@ -56,9 +56,13 @@ let randomElement = function (elems) {
 
 let ghostElement = function (element) {
   const parent = element.parentElement;
+  const { width, height } = element.getBoundingClientRect();
 
   const ghost = element.cloneNode(true);
   ghost.style.position = 'fixed';
+  ghost.style.width = `${width}px`;
+  ghost.style.height = `${height}px`;
+
 
   element.style.opacity = 0;
 
@@ -133,6 +137,8 @@ class Goose {
     this._node.style.width = '100px';
     this._node.style.height = '100px';
     this._node.style.position = 'fixed';
+    this._node.style.top = '0';
+    this._node.style.left = '0';
     this._node.style.zIndex = '1';
     // end styling
     
@@ -193,4 +199,4 @@ class Goose {
   }
 }
 
-new Goose (getLeafElements(document.querySelector('#main')).concat(...document.querySelectorAll('.chat')));
+let goose = new Goose (getLeafElements(document.querySelector('#main')).concat(...document.querySelectorAll('.chat')).filter(elementAreaPredicate));
