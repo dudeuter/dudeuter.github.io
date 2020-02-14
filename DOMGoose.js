@@ -88,7 +88,7 @@ let moveElementRelative = function (element, pushx, pushy) {
   moveElement(element, x + pushx, y + pushy);
 }
 
-let driver = function (element, cb = () => { }) {
+let driver = function (element, cb = () => {}) {
   let ghost = ghostElement(element);
   setInterval(() => {
     moveElementRelative(ghost, Math.round(Math.random()) ? 1 : -1, Math.round(Math.random()) ? 1 : -1);
@@ -97,7 +97,7 @@ let driver = function (element, cb = () => { }) {
   return ghost;
 }
 
-let driveAway = function (element, cb = () => { }) {
+let driveAway = function (element, cb = () => {}) {
   let ghost = ghostElement(element);
   setInterval(() => {
     moveElementRelative(ghost, 4, 4);
@@ -114,7 +114,6 @@ let getMidPoint = function (element) {
 let rectCollisionDetection = function (element1, element2) {
   const rect1 = element1.getBoundingClientRect();
   const rect2 = element2.getBoundingClientRect();
-
   if (rect1.x < rect2.x + rect2.width &&
     rect1.x + rect1.width > rect2.x &&
     rect1.y < rect2.y + rect2.height &&
@@ -127,11 +126,10 @@ let rectCollisionDetection = function (element1, element2) {
 class Goose {
   constructor() {
     this._node = document.createElement('img');
-    // this._node.id = 'goose';
 
     this._node.src = 'https://i.ya-webdesign.com/images/goose-clipart-7.png';
-    this._node.style.width = '50px';
-    this._node.style.height = '50px';
+    this._node.style.width = '100px';
+    this._node.style.height = '100px';
     this._node.style.position = 'fixed';
     this._node.style.zIndex = '100';
 
@@ -139,7 +137,6 @@ class Goose {
 
     // bind methods
     this.draw = this.draw.bind(this);
-    this.getPosition = this.getPosition.bind(this);
     this.decideTarget = this.decideTarget.bind(this);
     // end methods
 
@@ -160,7 +157,13 @@ class Goose {
 
     if (rectCollisionDetection(this._target, this._node)) {
       this._children.push(ghostElement(this._target));
-      this._target = this._gen.next().value;
+      const next = this._gen.next();
+
+      if (next.done) {
+        clearInterval(this._heartbeat);
+      } else {
+        this._target = next.value;
+      }
     }
 
     const mp = getMidPoint(this._target);
@@ -183,43 +186,9 @@ class Goose {
     this._target = randomElement(this._targets);
   }
 
-  getPosition() {
-    
-  }
-
   getRect() {
     return this._node.getBoundingClientRect();
   }
 }
 
-// getLeafElements().filter(elementAreaPredicate).forEach(element => {
-//   driver(element);
-// })
-
-/**
- * test code
- */
-
-
-var elems = getLeafElements().filter(elementAreaPredicate);
-
-var span = elems[0];
-
-var div = elems[1];
-
-// // var g = ghostElement(span);
-
-// let flag = false;
-
-// let driven = driver(span);
-
-// driver(div, (ghost) => {
-//   if (rectCollisionDetection(ghost, span)) {
-//     console.log('collided!');
-//   }
-// });
-
-
-let goose = new Goose();
-
-// elems.forEach(e => driveAway(e));
+const goose = new Goose();
