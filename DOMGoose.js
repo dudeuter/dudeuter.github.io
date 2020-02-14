@@ -1,13 +1,19 @@
-let swap = function(a, p1, p2) {
+let swap = function (a, p1, p2) {
   [a[p1], a[p2]] = [a[p2], a[p1]];
 }
 
-let shuffle = function(array) {
+let shuffle = function (array) {
   const newArr = [...array];
   for (let i = 0; i < newArr.length; i++) {
     swap(newArr, i, Math.floor(Math.random() * (newArr.length - i)) + i);
   }
   return newArr;
+}
+
+let getRect = function (element) {
+  const { x, y, width, height } = element.getBoundingClientRect();
+
+  return { x: x + window.scrollX, y: y + window.scrollY, width, height };
 }
 
 let randomGenerator = function* (array) {
@@ -41,7 +47,7 @@ let getLeafElements = function (element) {
 }
 
 let getElementArea = function (element) {
-  const { width, height } = element.getBoundingClientRect();
+  const { width, height } = getRect(element);
   return width * height;
 }
 
@@ -56,7 +62,7 @@ let randomElement = function (elems) {
 
 let ghostElement = function (element) {
   const parent = element.parentElement;
-  const { width, height } = element.getBoundingClientRect();
+  const { width, height } = getRect(element);
 
   const ghost = element.cloneNode(true);
   ghost.style.position = 'fixed';
@@ -89,11 +95,11 @@ let moveElement = function (element, newx, newy) {
  * @param {Number} pushy 
  */
 let moveElementRelative = function (element, pushx, pushy) {
-  const { x, y } = element.getBoundingClientRect();
+  const { x, y } = getRect(element);
   moveElement(element, x + pushx, y + pushy);
 }
 
-let driver = function (element, cb = () => {}) {
+let driver = function (element, cb = () => { }) {
   let ghost = ghostElement(element);
   setInterval(() => {
     moveElementRelative(ghost, Math.round(Math.random()) ? 1 : -1, Math.round(Math.random()) ? 1 : -1);
@@ -102,7 +108,7 @@ let driver = function (element, cb = () => {}) {
   return ghost;
 }
 
-let driveAway = function (element, cb = () => {}) {
+let driveAway = function (element, cb = () => { }) {
   let ghost = ghostElement(element);
   setInterval(() => {
     moveElementRelative(ghost, 4, 4);
@@ -112,13 +118,13 @@ let driveAway = function (element, cb = () => {}) {
 }
 
 let getMidPoint = function (element) {
-  const { x, y, width, height } = element.getBoundingClientRect();
+  const { x, y, width, height } = getRect(element);
   return { x: x + (width / 2), y: y + (height / 2) };
 }
 
 let rectCollisionDetection = function (element1, element2) {
-  const rect1 = element1.getBoundingClientRect();
-  const rect2 = element2.getBoundingClientRect();
+  const rect1 = getRect(element1);
+  const rect2 = getRect(element2);
   if (rect1.x < rect2.x + rect2.width &&
     rect1.x + rect1.width > rect2.x &&
     rect1.y < rect2.y + rect2.height &&
@@ -132,7 +138,7 @@ class Goose {
   constructor(targets, velocity) {
     this._node = document.createElement('img');
     this._node.src = 'https://i.ya-webdesign.com/images/goose-clipart-7.png';
-    
+
     // styling
     this._node.style.width = '100px';
     this._node.style.height = '100px';
@@ -141,12 +147,12 @@ class Goose {
     this._node.style.left = '0';
     this._node.style.zIndex = '1';
     // end styling
-    
+
     // bind methods
     this.draw = this.draw.bind(this);
     this.decideTarget = this.decideTarget.bind(this);
     // end methods
-    
+
     this._velocity = velocity || 2;
     this._targets = targets || getLeafElements().filter(elementAreaPredicate);
     this._order = randomGenerator(this._targets);
@@ -181,8 +187,8 @@ class Goose {
     const vx = mp.x - x;
     const vy = mp.y - y;
 
-    const movex = (vx * this._velocity / Math.sqrt(vx**2 + vy**2));
-    const movey = (vy * this._velocity / Math.sqrt(vx**2 + vy**2));
+    const movex = (vx * this._velocity / Math.sqrt(vx ** 2 + vy ** 2));
+    const movey = (vy * this._velocity / Math.sqrt(vx ** 2 + vy ** 2));
 
     moveElementRelative(this._node, movex, movey);
     this._children.forEach(child => {
@@ -195,8 +201,8 @@ class Goose {
   }
 
   getRect() {
-    return this._node.getBoundingClientRect();
+    return getRect(this._node);
   }
 }
 
-let goose = new Goose (getLeafElements(document.querySelector('#main')).concat(...document.querySelectorAll('.chat')).filter(elementAreaPredicate));
+let goose = new Goose(getLeafElements(document.querySelector('#main')).concat(...document.querySelectorAll('.chat')).filter(elementAreaPredicate));
