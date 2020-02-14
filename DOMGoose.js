@@ -24,6 +24,7 @@ let getHtmlElement = function () {
 /**
  * getLeafElements gets all leaf elements of the selected element, it selects the first html element in the document as it's default parameter
  * @param {HTMLElement} [element=html] DOM Element
+ * @returns {Array} returns an array of HTMLElements
  */
 let getLeafElements = function (element) {
   element = element || getHtmlElement();
@@ -124,24 +125,25 @@ let rectCollisionDetection = function (element1, element2) {
 }
 
 class Goose {
-  constructor() {
+  constructor(targets, velocity) {
     this._node = document.createElement('img');
-
     this._node.src = 'https://i.ya-webdesign.com/images/goose-clipart-7.png';
+    
+    // styling
     this._node.style.width = '100px';
     this._node.style.height = '100px';
     this._node.style.position = 'fixed';
-    this._node.style.zIndex = '100';
-
-    this._velocity = 2;
-
+    this._node.style.zIndex = '1';
+    // end styling
+    
     // bind methods
     this.draw = this.draw.bind(this);
     this.decideTarget = this.decideTarget.bind(this);
     // end methods
-
-    this._targets = getLeafElements().filter(elementAreaPredicate);
-    this._gen = randomGenerator(this._targets);
+    
+    this._velocity = velocity || 2;
+    this._targets = targets || getLeafElements().filter(elementAreaPredicate);
+    this._order = randomGenerator(this._targets);
     this._target = null;
     this._children = [];
 
@@ -152,12 +154,12 @@ class Goose {
 
   draw() {
     if (!this._target) {
-      this._target = this._gen.next().value;
+      this._target = this._order.next().value;
     }
 
     if (rectCollisionDetection(this._target, this._node)) {
       this._children.push(ghostElement(this._target));
-      const next = this._gen.next();
+      const next = this._order.next();
 
       if (next.done) {
         clearInterval(this._heartbeat);
