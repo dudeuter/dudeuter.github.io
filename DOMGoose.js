@@ -193,4 +193,4 @@ class Goose {
   }
 }
 
-const goose = new Goose();
+new Goose (getLeafElements(document.querySelector('#main')).concat(...document.querySelectorAll('.chat')));
