@@ -204,5 +204,3 @@ class Goose {
     return getRect(this._node);
   }
 }
-
-let goose = new Goose(getLeafElements(document.querySelector('#main')).concat(...document.querySelectorAll('.chat')).filter(elementAreaPredicate));
